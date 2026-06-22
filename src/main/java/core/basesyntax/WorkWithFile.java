@@ -7,24 +7,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class WorkWithFile {
-    public void getStatistic(String fromFileName, String toFileName) {
-        // Створюємо дві змінні-"скарбнички" для підрахунку суми
+    // Змінили void на String, бо метод має повертати результат
+    public String getStatistic(String fromFileName, String toFileName) {
         int totalSupply = 0;
         int totalBuy = 0;
 
-        // 1. Читаємо вхідний CSV файл
+        // 1. Читаємо файл (твоя логіка)
         try (BufferedReader reader = new BufferedReader(new FileReader(fromFileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // Розрізаємо рядок по комі на два елементи: [0] - тип, [1] - кількість
                 String[] row = line.split(",");
 
-                // Перевіряємо тип операції через .equals()
                 if (row[0].equals("supply")) {
-                    // Перетворюємо текст на число і плюсуємо в скарбничку supply
                     totalSupply += Integer.parseInt(row[1]);
                 } else if (row[0].equals("buy")) {
-                    // Перетворюємо текст на число і плюсуємо в скарбничку buy
                     totalBuy += Integer.parseInt(row[1]);
                 }
             }
@@ -32,16 +28,25 @@ public class WorkWithFile {
             throw new RuntimeException("Can't read file", e);
         }
 
-        // 2. Рахуємо фінальну різницю за твоїм планом
         int result = totalSupply - totalBuy;
 
-        // 3. Записуємо готовий звіт у новий файл
+        // 2. Створюємо звіт за допомогою StringBuilder (як просить система)
+        StringBuilder report = new StringBuilder();
+        report.append("supply,").append(totalSupply).append(System.lineSeparator());
+        report.append("buy,").append(totalBuy).append(System.lineSeparator());
+        report.append("result,").append(result).append(System.lineSeparator());
+
+        // Перетворюємо StringBuilder у звичайний рядок
+        String finalReport = report.toString();
+
+        // 3. Записуємо цей готовий рядок у новий файл
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(toFileName))) {
-            writer.write("supply," + totalSupply + System.lineSeparator());
-            writer.write("buy," + totalBuy + System.lineSeparator());
-            writer.write("result," + result + System.lineSeparator());
+            writer.write(finalReport);
         } catch (IOException e) {
             throw new RuntimeException("Can't write data to file", e);
         }
+
+        // 4. Повертаємо звіт (вимоги завдання виконано!)
+        return finalReport;
     }
 }
